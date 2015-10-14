@@ -65,7 +65,9 @@ module VagrantWinNFSd
             opts[:mount_options] = mount_opts
           end
 
-          opts[:hostpath] = '/' + opts[:hostpath].gsub(':', '').gsub('\\', '/')
+#          opts[:hostpath] = '/' + opts[:hostpath].gsub(':', '').gsub('\\', '/')
+opts[:hostpath] = '//?/' + opts[:hostpath].gsub('\\', '/')
+# See cap/nfs.rb
         end
         mount_folders[id] = opts.dup if opts[:guestpath]
       end

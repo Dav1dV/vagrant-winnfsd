@@ -12,6 +12,7 @@ module VagrantWinNFSd
       @nfs_path_file = "#{Vagrant.source_root}/nfspaths"
 
       def self.nfs_export(env, ui, id, ips, folders)
+#puts "nfs_export:"
         ui.info I18n.t('vagrant_winnfsd.hosts.windows.nfs_export')
         sleep 0.5
 
@@ -21,8 +22,19 @@ module VagrantWinNFSd
         nfs_file_lines.push("# VAGRANT-BEGIN: #{Process.uid} #{id}")
         folders.each do |k, opts|
           hostpath = opts[:hostpath].dup
+#puts hostpath
           hostpath.gsub!("'", "'\\\\''")
-          hostpath.gsub('/', '\\')
+#puts hostpath
+#          hostpath.gsub('/', '\\')
+# hostpath.gsub!('/', '\\')
+#puts hostpath
+# hostpath = '\\\\?\\' + hostpath
+hostpath = '//?/' + hostpath
+# Prepend //?/ so accessing paths longer than Windows legacy max works & doesn't crash WinNFSd
+# (instead of \\?\ so WinNFSd exports as //?/C:/path instead of /\?/C/path (as of WinNFSd 1.0.1 w/ initial long path support))
+
+#puts hostpath
+#puts ""
           nfs_file_lines.push("#{hostpath}")
         end
         nfs_file_lines.push("# VAGRANT-END: #{Process.uid} #{id}")
